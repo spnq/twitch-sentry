@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "lowdb": "^1.0.0",
     "tmi.js": "^1.2.1"
   },
   "devDependencies": {

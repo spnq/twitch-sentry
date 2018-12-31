@@ -1,6 +1,14 @@
 const tmi = require('tmi.js')
-const bot = require('./bot-settings')
-const channel = bot.testChannel;
+const config = require('./config')
+const channel = config.testChannel;
+const low = require('lowdb')
+const FileSync = require('lowdb/adapters/FileSync')
+
+const adapter = new FileSync('./db.json')
+const db = low(adapter)
+
+
+db.defaults({ users: [] }).write()
 
 let options ={
     options: {
@@ -11,15 +19,15 @@ let options ={
         reconnect: true
     },
     identity: {
-        username: bot.botName,
-        password: bot.auth
+        username: config.botName,
+        password: config.auth
     },
-    channels: bot.channels
+    channels: config.channels
 };
 
 const client = new tmi.client(options);
 client.connect();
 
 client.on('connected', (address, port) => {
-    client.action(channel, 'Hi, im a bot!')
+    client.action(channel, 'Connected')
 })
