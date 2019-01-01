@@ -61,6 +61,18 @@ client.on("message", function (channel, userstate, message, self) {
                                       .find({username})
                                       .value().points));
             break;
+        case (message.includes('!add') && userstate.badges.broadcaster === '1'):
+            if (message.split(' ').length !== 3) break;
+            db.read();
+            let addToUser = message.split(' ')[1];
+            let addAmount = parseInt(message.split(' ')[2]);
+            if (isNaN(addAmount) || addAmount < 0) { addAmount = 0}
+            if (!isUserInDB(addToUser)) { pushNewUser(addToUser) }
+            let currentPoints = db.get('users').find({username: addToUser}).value().points;
+            db.get('users').find({username: addToUser})
+                           .assign({points : currentPoints + addAmount})
+                           .write();
+            break;
         case (message === '!start' && userstate.badges.broadcaster === '1' && !betting):
             client.action(channel, `Start`);
             betting = true;
