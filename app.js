@@ -42,7 +42,7 @@ client.on("message", function (channel, userstate, message, self) {
     switch (true) {
         case self:
             break;
-        case (message.includes('!bet') && betting):
+        case (message.startsWith('!bet') && betting):
             let bettingAmount = parseInt(message.split(' ')[1]);
 
             if (bettingAmount < 0 || bettingAmount != message.split(' ')[1]) {
@@ -75,7 +75,7 @@ client.on("message", function (channel, userstate, message, self) {
                                       .find({username})
                                       .value().points)}`);
             break;
-        case (message.includes('!add') && userstate.badges.broadcaster === '1'):
+        case (message.startsWith('!add') && userstate.badges.broadcaster === '1'):
             if (message.split(' ').length !== 3) break;
             db.read();
             let addToUser = message.split(' ')[1];
