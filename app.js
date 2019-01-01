@@ -43,4 +43,9 @@ client.on("message", function (channel, userstate, message, self) {
             db.get('users').push({username: userstate.username, point: '0'}).write()
         }
     }
-  });
+    if (message === '!points') {
+        db.read()
+        client.action(channel, (db.get('users')
+                                  .find({username: userstate.username})
+                                  .value().point).toString())
+}});
