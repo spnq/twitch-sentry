@@ -41,6 +41,17 @@ client.on("message", function (channel, userstate, message, self) {
     switch (true) {
         case self:
             break;
+        case (message.includes('!bet') && betting):
+            let bettingAmount = message.split(' ')[1];
+            db.read();
+            if (isUserInDB(username)) {
+                client.action(channel, `${username} is in the base`);
+                pool$.next(bettingAmount);
+            } else {
+                client.action(channel, `${username} is not the base`);
+                pushNewUser(username)
+            }
+        break;
         case message === '!points':
             db.read();
             if (!isUserInDB(username)) {
