@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "lowdb": "^1.0.0",
+    "rxjs": "^6.3.3",
     "tmi.js": "^1.2.1"
   },
   "devDependencies": {
