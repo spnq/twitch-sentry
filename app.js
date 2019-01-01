@@ -38,23 +38,42 @@ client.on('connected', (address, port) => {
 
 client.on("message", function (channel, userstate, message, self) {
     let username = userstate.username;
+    let currentPoints;
     switch (true) {
         case self:
             break;
         case (message.includes('!bet') && betting):
-            let bettingAmount = message.split(' ')[1];
+            let bettingAmount = parseInt(message.split(' ')[1]);
+
+            if (bettingAmount < 0 || bettingAmount != message.split(' ')[1]) {
+                client.action(channel, `${username} illigal bet value.`);
+                break;
+            }
+
             db.read();
+
             if (!isUserInDB(username)) {pushNewUser(username)}
-            pool$.next({username: username, bet: bettingAmount});
+            
+            currentPoints = db.get('users').find({username: username}).value().points;
+            if ( bettingAmount > currentPoints) {
+                client.action(channel, `${username} don't have enougth points!`);
+                break;
+            } else {
+                db.get('users').find({username: username})
+                           .assign({points : currentPoints - bettingAmount})
+                           .write();
+                client.action(channel, `${username} you just bet ${bettingAmount}.`);
+                pool$.next({username: username, bet: bettingAmount});
+            }
         break;
         case message === '!points':
             db.read();
             if (!isUserInDB(username)) {
                 pushNewUser(username);
             }
-            client.action(channel, (db.get('users')
+            client.action(channel, `${username}, ${(db.get('users')
                                       .find({username})
-                                      .value().points));
+                                      .value().points)}`);
             break;
         case (message.includes('!add') && userstate.badges.broadcaster === '1'):
             if (message.split(' ').length !== 3) break;
@@ -63,7 +82,7 @@ client.on("message", function (channel, userstate, message, self) {
             let addAmount = parseInt(message.split(' ')[2]);
             if (isNaN(addAmount) || addAmount < 0) { addAmount = 0}
             if (!isUserInDB(addToUser)) { pushNewUser(addToUser) }
-            let currentPoints = db.get('users').find({username: addToUser}).value().points;
+            currentPoints = db.get('users').find({username: addToUser}).value().points;
             db.get('users').find({username: addToUser})
                            .assign({points : currentPoints + addAmount})
                            .write();
