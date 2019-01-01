@@ -90,7 +90,15 @@ client.on("message", function (channel, userstate, message, self) {
         case (message === '!start' && userstate.badges.broadcaster === '1' && !betting):
             client.action(channel, `Start`);
             betting = true;
-            pool$.subscribe( next => _pool.push(next));
+            pool$.subscribe( next => {
+                let targetRecord = _pool.filter(record => record.username === next.username);
+                if (targetRecord.length > 0) {
+                    _pool = _pool.filter(record => record.username !== next.username)
+                                 .concat(targetRecord.map( val => val = {username: next.username, bet: val.bet + next.bet}));
+                } else {
+                    _pool.push(next);
+                }
+            });
             break;
         case (message === '!end' && userstate.badges.broadcaster === '1' && betting):
             client.action(channel, `Stop`);
