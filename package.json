@@ -1,6 +1,6 @@
 {
   "name": "twitch-sentry",
-  "version": "1.0.4",
+  "version": "1.2.0",
   "description": "Twitch bot, running Node.js using RxJS and tmi.",
   "main": "app/app.js",
   "scripts": {
