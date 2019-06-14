@@ -106,7 +106,8 @@ function result(message) {
     let correctGuessedPool = [];
     let correctGuessedSum = 0;
     let wholePot = 0;
-    
+    let winnersArray = [];
+
     if (_pool.length === 1) {
         wholePot = _pool[0].bet
     } else if (_pool.length === 0) {
@@ -132,10 +133,18 @@ function result(message) {
     }
 
     correctGuessedPool.forEach( correctGuessedUserRecord => {
-            let prize =  parseInt(wholePot/(correctGuessedSum/correctGuessedUserRecord.bet))
+            let prize =  parseInt(wholePot/(correctGuessedSum/correctGuessedUserRecord.bet));
+            winnersArray.push({username: correctGuessedUserRecord.username, prize: prize})
             changePoints(correctGuessedUserRecord.username.toLowerCase(), prize)
          })
 
+    if (winnersArray.length > 0) {
+        client.action(channel, `The winners are: ${ winnersArray.map( record => ` ${record.username}, you got ${record.prize} points`)}.`)
+    } else {
+        client.action(channel, `There were no winners this time.`)
+    }
+
+    winnersArray = [];
     _pool = [];
 }
 
