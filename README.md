@@ -1,7 +1,26 @@
-# twitch-bot
+# TwitchSentry
 
-Simple Twitch Bot, running Node.js.
+Twitch bot, running Node.js using RxJS and tmi.
 
-* Can connect to server with a message.
-* Configurable throught config.js
-* Got a JSON database to store user information.
+* Configurable throught config.js.
+* Betting system.
+* Storing user information in local JSON database.
+* Event Based.
+
+# Installation
+
+`$ npm install twitch-sentry`
+
+# Configuring the bot
+ 
+Go to config.js and change it accordingly:
+
+```
+exports.auth = ''; //Oauth you got from twitchapps.com/tmi
+exports.botName = ''; //Bot's nickname from twitch.com
+exports.channels = ['']; //Channels bot able to connect
+exports.testChannel = ''; //Value with a channel, using for testing purposes 
+```
+
+Then start Sentry with `npm start`.
+
