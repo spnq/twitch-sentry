@@ -74,20 +74,35 @@ function result(message) {
     let result = message.split(' ')[1];
     let correctGuessedPool = [];
     let correctGuessedSum = 0;
-    let wholePot = _pool.reduce( (acc, val) =>  {
-        if (acc.bet) return parseInt(acc.bet) + parseInt(val.bet);
-        return parseInt(acc) + parseInt(val.bet);
-    })
+    let wholePot = 0;
+    
+    if (_pool.length === 1) {
+        wholePot = _pool[0].bet
+    } else if (_pool.length === 0) {
+        wholePot = 0;
+    } else {
+        wholePot = _pool.reduce( (acc, val) =>  {
+            if (acc.bet) return parseInt(acc.bet) + parseInt(val.bet);
+            return parseInt(acc) + parseInt(val.bet);
+        })
+    }
 
     correctGuessedPool = _pool.filter( record => parseInt(record.guess) === parseInt(result))
 
-    correctGuessedSum = correctGuessedPool.reduce( (acc, val) => {
-        if (acc.bet) return parseInt(acc.bet) + parseInt(val.bet);
-        return parseInt(acc) + parseInt(val.bet);
-    })
+    if (correctGuessedPool.length === 1) {
+        correctGuessedSum = correctGuessedPool[0].bet
+    } else if (correctGuessedPool.length === 0) {
+        correctGuessedSum = 0;
+    } else {
+        correctGuessedSum = correctGuessedPool.reduce( (acc, val) => {
+            if (acc.bet) return parseInt(acc.bet) + parseInt(val.bet);
+            return parseInt(acc) + parseInt(val.bet);
+        })
+    }
 
     correctGuessedPool.forEach( correctGuessedUserRecord => {
             let prize =  parseInt(wholePot/(correctGuessedSum/correctGuessedUserRecord.bet))
+            console.log(prize)
             changePoints(correctGuessedUserRecord.username.toLowerCase(), prize)
          })
 
