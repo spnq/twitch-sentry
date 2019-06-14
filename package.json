@@ -1,10 +1,9 @@
 {
   "name": "twitch-sentry",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Twitch bot, running Node.js using RxJS and tmi.",
   "main": "app/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app/app.js",
     "watch": "nodemon 'app/app.js' --ignore 'db.json'"
   },
