@@ -24,7 +24,6 @@ pool$.subscribe(next => {
     } else {
         _pool.push(next);
     }
-    console.log(_pool);
 });
 
 db.defaults({users: []}).write();
@@ -54,8 +53,10 @@ client.on('message', (channel, userstate, message, self) => {
     if (self || !message.startsWith('!')) return;
 
     let username = userstate.username.toLowerCase();
+    let isSub = userstate.subscriber;
     let isAdmin = userstate.badges && userstate.badges.broadcaster && userstate.badges.broadcaster === '1';
 
+    if (message.startsWith('!redeem')) redeem(username, isSub);
     if (message.startsWith('!bet') && betting) bet(message, username);
     if (message === '!points') points(username, channel);
     if (message.startsWith('!add') && isAdmin) add(message);
@@ -69,6 +70,31 @@ client.on('message', (channel, userstate, message, self) => {
     }
     if (message.startsWith('!result') && isAdmin && !betting) result(message);
 });
+
+function redeem(username, isSub) {
+    db.read()
+    let redeemPoints = isSub ? 300 : 100;
+    let now = new Date().toDateString();
+    if (!isUserInDB(username)) pushNewUser(username);
+    if (isTheSameDay(username)) {
+        client.action(channel, `${username}, you already redeemed free points today!`);
+    } else {
+        db.get('users')
+          .find({ username: username })
+          .assign({redeem: now, points: getCurrentPoints(username) + redeemPoints})
+          .write();
+          client.action(channel, `${username}, you got ${redeemPoints} points!`);
+    }
+}
+
+function isTheSameDay(username) {
+    let now = new Date().toDateString();
+    let lastRedeemed = db.get('users')
+                         .find({ username: username })
+                         .value().redeem
+                         console.log(now, lastRedeemed)
+    return now === lastRedeemed;
+}
 
 function result(message) {
     let result = message.split(' ')[1];
@@ -102,7 +128,6 @@ function result(message) {
 
     correctGuessedPool.forEach( correctGuessedUserRecord => {
             let prize =  parseInt(wholePot/(correctGuessedSum/correctGuessedUserRecord.bet))
-            console.log(prize)
             changePoints(correctGuessedUserRecord.username.toLowerCase(), prize)
          })
 
@@ -181,8 +206,9 @@ function getCurrentPoints(username) {
 }
 
 function pushNewUser(username) {
+
     db.get('users')
-      .push({username: username, points: 100})
+      .push({username: username, points: 100, redeem: new Date().toDateString()})
       .write();
 }
 
