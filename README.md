@@ -8,6 +8,9 @@ Twitch bot, running Node.js using RxJS and tmi.
 * Event Based.
 * Add customs commands and responses.
 
+# 📖 Wiki 
+For detailed information on installation and all the available commands go to [Wiki](https://github.com/spnq/twitch-sentry/wiki)
+
 # Installation
 
 ## npm
@@ -20,7 +23,6 @@ $ npm install twitch-sentry
 $ git clone https://github.com/spnq/twitch-sentry.git
 $ cd twitch-sentry
 $ npm install
-$ npm start
 ```
 
 
