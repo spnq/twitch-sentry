@@ -1,14 +1,15 @@
 {
-  "name": "twitch-bot",
+  "name": "twitch-sentry",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "Twitch bot, running Node.js using RxJS and tmi.",
+  "main": "app/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon 'app/app.js' --ignore 'db.json'"
+    "start": "node app/app.js",
+    "watch": "nodemon 'app/app.js' --ignore 'db.json'"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "spnq",
+  "license": "MIT",
   "dependencies": {
     "lowdb": "^1.0.0",
     "rxjs": "^6.3.3",
