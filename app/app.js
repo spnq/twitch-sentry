@@ -8,6 +8,8 @@ const rx = require('rxjs');
 const adapter = new FileSync('./db.json');
 const db = low(adapter);
 
+const messagesObject = require('../messages')
+
 let betting = false;
 let _pool = [];
 const pool$ = new rx.Subject(_pool);
@@ -69,6 +71,9 @@ client.on('message', (channel, userstate, message, self) => {
         client.action(channel, 'Stop');
     }
     if (message.startsWith('!result') && isAdmin && !betting) result(message);
+    if (messagesObject[message]) {
+        client.action(channel, messagesObject[message])
+    }
 });
 
 function redeem(username, isSub) {
