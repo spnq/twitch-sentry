@@ -87,9 +87,7 @@ function result(message) {
     })
 
     correctGuessedPool.forEach( correctGuessedUserRecord => {
-        console.log(wholePot, typeof wholePot, correctGuessedSum, typeof correctGuessedSum, correctGuessedUserRecord.bet, typeof correctGuessedUserRecord.bet)
             let prize =  parseInt(wholePot/(correctGuessedSum/correctGuessedUserRecord.bet))
-            console.log(prize)
             changePoints(correctGuessedUserRecord.username.toLowerCase(), prize)
          })
 
