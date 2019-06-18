@@ -6,7 +6,7 @@ Twitch bot, running Node.js using RxJS and tmi.
 * Storing user information in local JSON database.
 * Event Based.
 * Configure custom commands and responses.
-* Configure custom pereodic messages.
+* Configure custom periodic messages.
 
 # 📖 Wiki 
 For detailed information on installation and all the available commands go to [Wiki](https://github.com/spnq/twitch-sentry/wiki)
@@ -59,9 +59,9 @@ Go to custom_messages.json and add you own messages:
 }
 ```
 
-# ⌛️ Add custom pereodic messages
+# ⌛️ Add custom periodic messages
 
-Go to pereodics.json and add your messages and intervals for them to appear with, for example: 
+Go to periodics.json and add your messages and intervals for them to appear with, for example: 
 ```json
 {
     "messages": [

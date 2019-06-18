@@ -1,6 +1,6 @@
 const rx = require('rxjs');
 const customMessages = require('../custom_messages.json');
-const pereodics = require('../pereodics.json');
+const periodics = require('../periodics.json');
 const constants = require('../constants.json');
 
 class Client {
@@ -13,7 +13,7 @@ class Client {
         this.betting = false;
         this._pool = [];
         this.pool$ = new rx.Subject(this._pool);
-        if (pereodics.messages.length > 0) this.pereodicsInit();
+        if (periodics.messages.length > 0) this.periodicsInit();
         this.db.connect();
         this.messageEventInit();
         this.poolSubscriptionInit();
@@ -74,8 +74,8 @@ class Client {
         });
     }
 
-    pereodicsInit() {
-        pereodics.messages.forEach(msg =>  setInterval(() => this.say(msg.message), this.getIntervalTime(msg.interval)));
+    periodicsInit() {
+        periodics.messages.forEach(msg =>  setInterval(() => this.say(msg.message), this.getIntervalTime(msg.interval)));
     }
 
     getIntervalTime(interval) {
