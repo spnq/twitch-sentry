@@ -2,16 +2,16 @@
 
 Twitch bot, running Node.js using RxJS and tmi.
 
-* Configurable throught config.js.
 * Betting system.
 * Storing user information in local JSON database.
 * Event Based.
-* Add customs commands and responses.
+* Configure custom commands and responses.
+* Configure custom pereodic messages.
 
 # 📖 Wiki 
 For detailed information on installation and all the available commands go to [Wiki](https://github.com/spnq/twitch-sentry/wiki)
 
-# Installation
+# 🖥 Installation
 
 ## npm
 ```Shell
@@ -26,15 +26,21 @@ $ npm install
 ```
 
 
-# Configuring the bot
+# ⚙️ Configuring the bot
  
-Go to config.js and change it accordingly:
-```javascript
-exports.auth = ''; //Oauth you got from twitchapps.com/tmi
-exports.botName = ''; //Bot's nickname from twitch.com
-exports.channels = ['']; //Channels bot able to connect
-exports.testChannel = ''; //Value with a channel, using for testing purposes 
+Go to config.json and change it accordingly:
+```json
+{
+    "auth": "",
+    "botName": "",
+    "channels": [""],
+    "defaultChannel": ""
+}
 ```
+* auth - Oauth you got from twitchapps.com/tmi.
+* botName - Bot's nickname from twitch.com.
+* channels - Channels bot connects to.
+* defaultChannel - Value with a channel, bot interacts with 
 
 Then start Sentry with 
 ```Shell
@@ -43,23 +49,41 @@ npm start
 
 You should see a message from your bot in the chat.
 
-# Add custom commands and responses
+# 📮 Add custom commands and responses
 
-Go to messages.js and add you own messages:
-```javascript
-module.exports =  {
+Go to custom_messages.json and add you own messages:
+```json
+{
     "!github":"https://github.com/spnq/twitch-sentry",
     "!email":"spnq@riseup.net"
 }
 ```
 
-# Betting
+# ⌛️ Add custom pereodic messages
+
+Go to pereodics.json and add your messages and intervals for them to appear with, for example: 
+```json
+{
+    "messages": [
+        {
+            "message": "Give a Star @https://github.com/spnq/twitch-sentry",
+            "interval": {
+                "hours" : 0,
+                "minutes": 0,
+                "seconds": 10
+            }
+        }
+    ]
+}
+```
+
+# 🎲 Betting
 
 * Once you want to start a betting cycle type `!startBet` in the chat.
 * Then bet with `!bet` command. Guess value goes first, bet value goes second. 
 * When all the bets are placed, stop betting process with `!stopBet` command.
 * When you got your result type `!result` and it's value to determine the winners.
 
-# License
+# 🔖 License
 
 Licensed under MIT License. View the [file](https://github.com/spnq/twitch-sentry/blob/master/LICENSE) for the full text.
