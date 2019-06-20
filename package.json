@@ -1,6 +1,6 @@
 {
   "name": "twitch-sentry",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "Configurable Twitch bot, running Node.js using RxJS, TypeScript, lowdb and tmi.",
   "main": "dist/app/app.js",
   "scripts": {
