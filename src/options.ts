@@ -1,7 +1,8 @@
-const config = require('./config.json');
-const channel = config.defaultChannel;
+import config from './config';
 
-const options = {
+export const channel = config.defaultChannel;
+
+export const options = {
     options: {
         debug: true
     },
@@ -16,5 +17,3 @@ const options = {
     channels: config.channels
 };
 
-module.exports.options = options;
-module.exports.channel = channel;

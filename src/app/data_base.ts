@@ -1,24 +1,19 @@
-class DataBase {
-    constructor(adapter, defaults) {
-        this.adapter = adapter;
-        this.defaults = defaults;
-    }
+export class DataBase {
+    constructor(private adapter: any, private defaults: Object) {}
 
     connect() {
         this.adapter.defaults(this.defaults).write()
         console.log('Database Connected!')
     }
 
-    pull() {
+    isUserInDB(username: string) {
         this.adapter.read()
-    }
-
-    isUserInDB(username) {
         if (this.adapter.get('users').find({username: username}).value()) return true;
         return false;
     }
     
-    changePoints(username, amount) {
+    changePoints(username: string, amount: number) {
+        this.adapter.read()
         let currentPoints = this.getCurrentPoints(username)
     
         this.adapter.get('users')
@@ -27,30 +22,32 @@ class DataBase {
             .write();
     }
     
-    changeRedeemDate(username, newDate) {
+    changeRedeemDate(username: string, newDate: string) {
+        this.adapter.read()
         this.adapter.get('users')
             .find({ username: username })
             .assign({redeem: newDate})
             .write();
     }
 
-    getCurrentPoints(username) {
+    getCurrentPoints(username: string) {
+        this.adapter.read()
         return this.adapter.get('users')
                  .find({ username: username })
                  .value().points;
     }
     
-    pushNewUser(username) {
+    pushNewUser(username: string) {
+        this.adapter.read()
         this.adapter.get('users')
           .push({username: username, points: 100, redeem: new Date().toDateString()})
           .write();
     }
 
-    get(username, value) {
+    get(username: string, value: string) {
+        this.adapter.read()
         return this.adapter.get('users')
                     .find({ username: username })
                     .value()[value]
     }
 }
-
-module.exports = DataBase;

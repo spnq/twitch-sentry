@@ -1,58 +1,58 @@
-const rx = require('rxjs');
-const customMessages = require('../custom_messages.json');
-const periodics = require('../periodics.json');
-const constants = require('../constants.json');
+import { Subject } from 'rxjs';
+import { customMessages } from '../custom_messages';
+import { periodics } from '../periodics';
+import constants from '../constants';
+import { Client as TmiClient } from 'tmi.js'
+import { DataBase } from './data_base';
+import { BetRecord, Interval, PeriodicMessage } from '../types';
 
-class Client {
+export class Client {
 
-    constructor(client, options, channel, db) {
-        this.options = options;
-        this.client = new client(this.options);
-        this.channel = channel;
-        this.db = db;
-        this.betting = false;
-        this._pool = [];
-        this.pool$ = new rx.Subject(this._pool);
-        if (periodics.messages.length > 0) this.periodicsInit();
+    constructor(private client: TmiClient, private channel: string, private db: DataBase) {
+        if (periodics.length > 0) this.periodicsInit();
         this.db.connect();
         this.messageEventInit();
         this.poolSubscriptionInit();
     }
+    
+    betting = false;
+    _pool: Array<BetRecord> = [];
+    readonly pool$ = new Subject();
 
-    connect() {
-        this.client.connect(this.options)
+    connect(): void {
+        this.client.connect()
                    .then(() => {
                        console.log('Client Connected!'),
                        this.say('Connected!');
                     })
-                   .catch( err => console.log('Connection Failed: ', err));
+                   .catch( (err: string) => console.log('Connection Failed: ', err));
     }
 
-    poolSubscriptionInit() {
-        this.pool$.subscribe(next => {
-            let targetRecord = this._pool.filter(record => record.username === next.username);
+    poolSubscriptionInit(): void {
+        this.pool$.subscribe((newBet: any) => {
+            let targetRecord: Array<BetRecord> = this._pool.filter(record => record.username === newBet.username);
             if (targetRecord.length > 0) {
-                this._pool = this._pool.filter(record => record.username !== next.username)
-                                       .concat(targetRecord.map(val => {
-                                            this.db.changePoints(val.username, val.bet);
-                                            return {username: next.username, bet: next.bet,guess: next.guess};
+                this._pool = this._pool.filter(record => record.username !== newBet.username)
+                                       .concat(targetRecord.map(record => {
+                                            this.db.changePoints(record.username, record.bet);
+                                            return {username: newBet.username, bet: newBet.bet,guess: newBet.guess};
                         }));
             } else {
-                this._pool.push(next);
+                this._pool.push(newBet);
             }
         });
     }
 
-    say(message) {
+    say(message: string) {
         this.client.action(this.channel, message)
     }
 
     messageEventInit() {
-        this.client.on('message', (channel, userstate, message, self) => {
+        this.client.on('message', (_channel, userstate, message, self) => {
             if (self || !message.startsWith('!')) return;
 
-            let username = userstate.username.toLowerCase();
-            let isSub = userstate.subscriber;
+            let username = userstate.username ? userstate.username.toLowerCase() : '';
+            let isSub = userstate.subscriber ? true: false;
             let isAdmin = userstate.badges && userstate.badges.broadcaster && userstate.badges.broadcaster === '1';
         
             if (message.startsWith('!redeem')) this.redeem(username, isSub);
@@ -69,22 +69,21 @@ class Client {
             }
             else if (message.startsWith('!result') && isAdmin && !this.betting) this.result(message);
             else if (customMessages[message]) {
-                this.say('Betting Ends', customMessages[message]);
+                this.say('Betting Ends ' + customMessages[message]);
             }
         });
     }
 
     periodicsInit() {
-        periodics.messages.forEach(msg =>  setInterval(() => this.say(msg.message), this.getIntervalTime(msg.interval)));
+        periodics.forEach((message: PeriodicMessage) =>  setInterval(() => this.say(message.message), this.getIntervalTime(message.interval)));
     }
 
-    getIntervalTime(interval) {
+    getIntervalTime(interval: Interval) {
         return interval.hours * 3600 * 1000 + interval.minutes * 60 * 1000 + interval.seconds * 1000
     }
 
-    redeem(username, isSub) {
-        this.db.pull()
-        let redeemPoints = isSub ? constants.sub_points : constants.unsub_points;
+    redeem(username: string, isSub: boolean) {
+        let redeemPoints = isSub ? constants.SUB_POINTS : constants.UNSUB_POINTS;
         let now = new Date().toDateString();
         if (!this.db.isUserInDB(username)) this.db.pushNewUser(username);
         if (this.isTheSameDay(username)) {
@@ -96,45 +95,39 @@ class Client {
         }
     }
 
-    isTheSameDay(username) {
+    isTheSameDay(username: string) {
         let now = new Date().toDateString();
         let lastRedeemed = this.db.get(username, 'redeem');
         return now === lastRedeemed;
     }
 
-    result(message) {
-        let result = message.split(' ')[1];
+    result(message: string) {
+        let result = parseInt(message.split(' ')[1]);
         let correctGuessedPool = [];
         let correctGuessedSum = 0;
         let wholePot = 0;
-        let winnersArray = [];
+        let winnersArray: Array<{username: string, prize: number}> = [];
 
         if (this._pool.length === 1) {
             wholePot = this._pool[0].bet
         } else if (this._pool.length === 0) {
             wholePot = 0;
         } else {
-            wholePot = this._pool.reduce( (acc, val) =>  {
-                if (acc.bet) return parseInt(acc.bet) + parseInt(val.bet);
-                return parseInt(acc) + parseInt(val.bet);
-            })
+            this._pool.forEach( record => wholePot += record.bet)
         }
 
-        correctGuessedPool = this._pool.filter( record => parseInt(record.guess) === parseInt(result))
+        correctGuessedPool = this._pool.filter( record => record.guess === result)
 
         if (correctGuessedPool.length === 1) {
             correctGuessedSum = correctGuessedPool[0].bet
         } else if (correctGuessedPool.length === 0) {
             correctGuessedSum = 0;
         } else {
-            correctGuessedSum = correctGuessedPool.reduce( (acc, val) => {
-                if (acc.bet) return parseInt(acc.bet) + parseInt(val.bet);
-                return parseInt(acc) + parseInt(val.bet);
-            })
+            correctGuessedPool.forEach( record => correctGuessedSum += record.bet)
         }
 
         correctGuessedPool.forEach( correctGuessedUserRecord => {
-                let prize =  parseInt(wholePot/(correctGuessedSum/correctGuessedUserRecord.bet));
+                let prize =  wholePot/(correctGuessedSum/correctGuessedUserRecord.bet);
                 winnersArray.push({username: correctGuessedUserRecord.username, prize: prize})
                 this.db.changePoints(correctGuessedUserRecord.username.toLowerCase(), prize)
             })
@@ -149,9 +142,8 @@ class Client {
         this._pool = [];
     }
 
-    add(message) {
+    add(message: string) {
         if (message.split(' ').length !== 3) return;
-        this.db.pull();
         let addToUser = message.split(' ')[1].replace('@', '').toLowerCase();
         let addAmount = parseInt(message.split(' ')[2]);
         if (isNaN(addAmount) || addAmount < 0) addAmount = 0;
@@ -162,23 +154,21 @@ class Client {
         this.say( `${addAmount} where added to ${addToUser}. Points: ${this.db.getCurrentPoints(addToUser)}`)
     }
 
-    bet(message, username) {
+    bet(message: string, username: string) {
         if (message.split(' ').length !== 3) {
             this.say(`${username} illigal bet value.`);
             return;
         }
         let bettingAmount = parseInt(message.split(' ')[2]);
         let guess = parseInt(message.split(' ')[1]);
-        if (bettingAmount < 0 || bettingAmount != message.split(' ')[2]) {
+        if (bettingAmount < 0 || bettingAmount.toString() != message.split(' ')[2]) {
             this.say(`${username} illigal bet value.`);
             return;
         }
-        if (guess < 0 || guess != message.split(' ')[1]) {
+        if (guess < 0 || guess.toString() !== message.split(' ')[1]) {
            this.say(`${username} illigal guess value.`);
             return;
         }
-
-        this.db.pull();
 
         if (!this.db.isUserInDB(username)) this.db.pushNewUser(username);
 
@@ -196,11 +186,8 @@ class Client {
         }
     }
 
-    points(username) {
-        this.db.pull();
+    points(username: string) {
         if (!this.db.isUserInDB(username)) this.db.pushNewUser(username);
         this.say( `${username}, ${this.db.getCurrentPoints(username)}`);
     }
 }
-
-module.exports = Client;
