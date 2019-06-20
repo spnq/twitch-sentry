@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node dist/app/app.js",
     "watch": "nodemon 'src/app/app.ts' --ignore 'db.json' --ignore 'dist'",
-    "test": "jest --watchAll",
     "build": "tsc"
   },
   "author": "spnq",
