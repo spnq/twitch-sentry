@@ -3,7 +3,7 @@
 ![npm](https://img.shields.io/npm/dm/twitch-sentry.svg)
 # TwitchSentry
 
-Twitch bot, running Node.js using RxJS and tmi.
+Twitch bot, running Node.js using RxJS, TypeScript, lowdb and tmi.
 
 * Betting system.
 * Storing user information in local JSON database.
@@ -28,22 +28,33 @@ $ cd twitch-sentry
 $ npm install
 ```
 
+Configure the bot and run 
+
+```Shell
+$ npm run build
+```
 
 # Configuring the bot
  
-Go to config.json and change it accordingly:
-```json
+Go to src/config.ts and change it accordingly:
+```javascripts
 {
-    "auth": "",
-    "botName": "",
-    "channels": [""],
-    "defaultChannel": ""
+    auth: "",
+    botName: "",
+    channels: [""],
+    defaultChannel: ""
 }
 ```
 * auth - Oauth you got from twitchapps.com/tmi.
 * botName - Bot's nickname from twitch.com.
 * channels - Channels bot connects to.
 * defaultChannel - Value with a channel, bot interacts with 
+
+Build the bot with 
+
+```Shell
+$ npm run build
+```
 
 Then start Sentry with 
 ```Shell
@@ -54,8 +65,8 @@ You should see a message from your bot in the chat.
 
 # Add custom commands and responses
 
-Go to custom_messages.json and add you own messages:
-```json
+Go to src/custom_messages.ts and add you own messages:
+```javascript
 {
     "!github":"https://github.com/spnq/twitch-sentry",
     "!email":"spnq@riseup.net"
@@ -64,20 +75,18 @@ Go to custom_messages.json and add you own messages:
 
 # Add custom periodic messages
 
-Go to periodics.json and add your messages and intervals for them to appear with, for example: 
-```json
-{
-    "messages": [
-        {
-            "message": "Give a Star @https://github.com/spnq/twitch-sentry",
-            "interval": {
-                "hours" : 0,
-                "minutes": 0,
-                "seconds": 10
-            }
+Go to src/periodics.ts and add your messages and intervals for them to appear with in the array, for example: 
+```javascript
+ [
+    {
+        message: "Give a Star @https://github.com/spnq/twitch-sentry",
+        interval: {
+            hours : 0,
+            minutes: 0,
+            seconds: 10
         }
-    ]
-}
+    }
+]
 ```
 
 # Betting
