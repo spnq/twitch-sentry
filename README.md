@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/spnq/twitch-sentry.svg?branch=master)](https://travis-ci.org/spnq/twitch-sentry)
+[![npm version](https://badge.fury.io/js/twitch-sentry.svg)](https://badge.fury.io/js/twitch-sentry)
+![npm](https://img.shields.io/npm/dm/twitch-sentry.svg)
 # TwitchSentry
 
 Twitch bot, running Node.js using RxJS and tmi.
@@ -11,7 +14,7 @@ Twitch bot, running Node.js using RxJS and tmi.
 # 📖 Wiki 
 For detailed information on installation and all the available commands go to [Wiki](https://github.com/spnq/twitch-sentry/wiki)
 
-# 🖥 Installation
+# Installation
 
 ## npm
 ```Shell
@@ -26,7 +29,7 @@ $ npm install
 ```
 
 
-# ⚙️ Configuring the bot
+# Configuring the bot
  
 Go to config.json and change it accordingly:
 ```json
@@ -49,7 +52,7 @@ npm start
 
 You should see a message from your bot in the chat.
 
-# 📮 Add custom commands and responses
+# Add custom commands and responses
 
 Go to custom_messages.json and add you own messages:
 ```json
@@ -59,7 +62,7 @@ Go to custom_messages.json and add you own messages:
 }
 ```
 
-# ⌛️ Add custom periodic messages
+# Add custom periodic messages
 
 Go to periodics.json and add your messages and intervals for them to appear with, for example: 
 ```json
@@ -77,13 +80,13 @@ Go to periodics.json and add your messages and intervals for them to appear with
 }
 ```
 
-# 🎲 Betting
+# Betting
 
 * Once you want to start a betting cycle type `!startBet` in the chat.
 * Then bet with `!bet` command. Guess value goes first, bet value goes second. 
 * When all the bets are placed, stop betting process with `!stopBet` command.
 * When you got your result type `!result` and it's value to determine the winners.
 
-# 🔖 License
+# License
 
 Licensed under MIT License. View the [file](https://github.com/spnq/twitch-sentry/blob/master/LICENSE) for the full text.
