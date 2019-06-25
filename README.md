@@ -89,6 +89,11 @@ Go to src/periodics.ts and add your messages and intervals for them to appear wi
 ]
 ```
 
+After each modification of any config you must rebuild the bot with to apply changes:
+```Shell
+npm start
+```
+
 # Betting
 
 * Once you want to start a betting cycle type `!startBet` in the chat.
